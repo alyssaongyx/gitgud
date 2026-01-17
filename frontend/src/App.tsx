@@ -7,7 +7,7 @@ import Spinner from './components/Spinner';
 import { Card, CardContent } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { CompareResult, User } from './types';
-import { Github, Users } from 'lucide-react';
+import { Github, Users, LogOut } from 'lucide-react';
 
 // In development, use Vite proxy (/api) or direct connection
 // In production, use the actual backend URL
@@ -35,25 +35,27 @@ function App() {
       window.history.replaceState({}, '', window.location.pathname);
     }
 
-    if (mode === 'pvp') {
-      fetch(`${API_BASE}/auth/me`, {
-        credentials: 'include',
+    // Always check for user session (on mount and when mode changes)
+    fetch(`${API_BASE}/auth/me`, {
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return null;
       })
-        .then((res) => {
-          if (res.ok) {
-            return res.json();
-          }
-          return null;
-        })
-        .then((data) => {
-          if (data?.user) {
-            setUser(data.user);
-          } else {
-            setUser(null);
-          }
-        })
-        .catch(console.error);
-    }
+      .then((data) => {
+        if (data?.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch user:', err);
+        setUser(null);
+      });
   }, [mode]);
 
   const handleLogin = () => {
@@ -150,7 +152,7 @@ function App() {
         {/* Mode Switcher */}
         <Card className="mb-8">
           <CardContent className="p-4">
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-4 justify-center items-center">
               <Button
                 variant={mode === 'offline' ? 'default' : 'outline'}
                 onClick={() => setMode('offline')}
@@ -167,6 +169,22 @@ function App() {
                 <Github className="w-4 h-4" />
                 PVP Mode
               </Button>
+              {user && (
+                <div className="ml-auto flex items-center gap-3 px-4 py-2 bg-muted rounded-lg">
+                  {user.avatarUrl && (
+                    <img src={user.avatarUrl} alt={user.username} className="w-8 h-8 rounded-full" />
+                  )}
+                  <div className="text-sm">
+                    <p className="font-semibold">@{user.username}</p>
+                    <p className="text-xs text-muted-foreground">Logged in</p>
+                  </div>
+                  {mode === 'pvp' && (
+                    <Button variant="ghost" size="sm" onClick={handleLogout} className="ml-2">
+                      <LogOut className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
