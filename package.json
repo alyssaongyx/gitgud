@@ -1,0 +1,32 @@
+{
+  "name": "gitgud-backend",
+  "version": "1.0.0",
+  "description": "Backend API for GitGud Chrome extension",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "openai": "^4.28.0",
+    "undici": "^6.19.8",
+    "zod": "^3.23.8",
+    "lru-cache": "^11.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/uuid": "^9.0.7",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.5",
+    "pino-pretty": "^11.0.0"
+  }
+}
